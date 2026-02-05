@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Online Shop</title>
+
+    <style>
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            margin: 0;
+            background: #f4f6f9;
+        }
+
+        header {
+            background: linear-gradient(135deg, #4f46e5, #3b82f6);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 32px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        h2 {
+            color: #333;
+            margin-top: 40px;
+        }
+
+        /* Product Grid */
+        .products {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            padding: 15px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .product-card h3 {
+            margin: 0 0 10px;
+        }
+
+        .price {
+            font-size: 18px;
+            font-weight: bold;
+            color: #16a34a;
+        }
+
+        button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 10px;
+            width: 100%;
+            font-size: 14px;
+        }
+
+        button:hover {
+            background: #1e40af;
+        }
+
+        /* Order Section */
+        .order-box {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            max-width: 400px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        .selected {
+            color: #2563eb;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        footer {
+            margin-top: 60px;
+            padding: 15px;
+            text-align: center;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>🛒 My Online Shop</h1>
+    <p>Simple • Fast • Serverless</p>
+</header>
+
+<div class="container">
+
+    <h2>🛍 Products</h2>
+    <div class="products" id="products"></div>
+
+    <h2>📦 Place Order</h2>
+    <div class="order-box">
+        <input id="name" placeholder="Customer Name">
+        <input id="qty" type="number" placeholder="Quantity">
+
+        <div class="selected" id="selectedProduct">
+            No product selected
+        </div>
+
+        <button id="orderBtn" onclick="placeOrder()">Place Order</button>
+    </div>
+
+</div>
+
+<footer>
+    © 2026 My Online Shop | Powered by AWS
+</footer>
+
+<script>
+const API = "https://f0wlimr0e2.execute-api.eu-north-1.amazonaws.com/prod";
+let selectedProduct = null;
+
+// Load products
+fetch(API + "/products")
+.then(res => res.json())
+.then(data => {
+    data.forEach(p => {
+        const card = document.createElement("div");
+        card.className = "product-card";
+        card.innerHTML = `
+            <h3>${p.name}</h3>
+            <div class="price">₹${p.price}</div>
+            <button type="button" onclick='selectProduct(${JSON.stringify(p)})'>
+                Select Product
+            </button>
+        `;
+        document.getElementById("products").appendChild(card);
+    });
+});
+
+// Select product
+function selectProduct(p) {
+    selectedProduct = p;
+    document.getElementById("selectedProduct").innerText =
+        `Selected: ${p.name} (₹${p.price})`;
+}
+
+// Place order
+function placeOrder() {
+    if (!selectedProduct) {
+        alert("Please select a product first!");
+        return;
+    }
+
+    fetch(API + "/order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            customerName: document.getElementById("name").value,
+            productId: selectedProduct.productId,
+            productName: selectedProduct.name,
+            quantity: Number(document.getElementById("qty").value),
+            price: selectedProduct.price
+        })
+    })
+    .then(res => res.json())
+.then(data => {
+    console.log("Order API response:", data);
+    const body = typeof data.body === "string" ? JSON.parse(data.body) : data;
+    alert(`✅ Order placed successfully!\nOrder ID: ${body.orderId}`);
+})
+    .catch(err => {
+    console.error("Order API error:", err);
+    alert("Order failed. Check console.");
+    });
+}
+</script>
+
+</body>
+</html>
