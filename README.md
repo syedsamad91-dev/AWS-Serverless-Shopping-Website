@@ -5,6 +5,20 @@
 ![Python](https://img.shields.io/badge/Python-3.9+-yellow)
 ![Status](https://img.shields.io/badge/Status-Completed-brightgreen)
 
+serverless-shopping-website/
+│
+├── frontend/
+│ └── index.html
+│
+├── lambda/
+│ ├── getProducts.py
+│ └── placeOrder.py
+│
+├── architecture/
+│ └── serverless-architecture.png
+│
+├── README.md
+
 A serverless online shopping website built using **AWS S3, API Gateway, Lambda, and DynamoDB**.  
 This project demonstrates how to design, build, and deploy a **real-world serverless application**.
 
