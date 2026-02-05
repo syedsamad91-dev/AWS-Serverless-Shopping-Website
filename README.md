@@ -1,3 +1,6 @@
+<img width="352" height="453" alt="image" src="https://github.com/user-attachments/assets/49547ab6-586d-4c96-80c9-eb1e71362ee3" />
+
+
 # 🛒 Serverless Shopping Website
 
 ![AWS](https://img.shields.io/badge/AWS-Cloud-orange)
